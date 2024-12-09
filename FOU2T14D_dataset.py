@@ -25,6 +25,12 @@ def extract_data_into_list(data):
         
     return records
 
+#To ensure efficient performance for large datasets in the future - data is fetched in a specific chunk size
+def fetch_data_in_chunks(dataset):
+    
+    chunk_size = 100
+    for chunk in range(0, len(dataset), chunk_size):
+        yield dataset[chunk:chunk + chunk_size]
 
 #Preprocess to avoid duplicates.
 def preprocess_data(data):
@@ -32,13 +38,6 @@ def preprocess_data(data):
     df = pd.Series(data)
     deduplicated_data = df.drop_duplicates() 
     return deduplicated_data      
-
-#To ensure efficient performance for large datasets in the future - data is chunked in a specified size
-def fetch_data_in_chunks(dataset):
-    
-    chunk_size = 100
-    for chunk in range(0, len(dataset), chunk_size):
-        yield dataset[chunk:chunk + chunk_size]
     
 def insert_into_evora_database(cursor, dataset_records):
     
@@ -46,7 +45,8 @@ def insert_into_evora_database(cursor, dataset_records):
     
     cursor.executemany(sql_query, dataset_records)
 
-def evora_task_management():
+#Perform the task of fetching and inserting into  the database
+def perform_evora_task():
     
     new_data = fetch_new_data()
     
@@ -67,7 +67,7 @@ def evora_task_management():
         print(f"Error with task management process: {error}")
         
 if __name__ == '__main__':
-    evora_task_management()
+    perform_evora_task()
 
 
 
