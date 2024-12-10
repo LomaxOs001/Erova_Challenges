@@ -1,29 +1,43 @@
 import psycopg2
 import requests
 import pandas as pd
+from urllib.parse import urlencode
 
+URL = 'https://data.elexon.co.uk/bmrs/api/v1/datasets/FOU2T14D'
 
 def set_db_connection():
-    conn = psycopg2.connect(dbname="evora_task_db", user="postgres", password="mtu12345", host="localhost")
+    conn = psycopg2.connect(dbname="erova_db", user="postgres", password="mtu12345", host="localhost")
     return conn
+
+#Enable dynamic retrieval of data
+def fetch_data(parameters=None):
     
-#fetch dataset using GET request
-def fetch_new_data():
-    
-    URL = 'https://data.elexon.co.uk/bmrs/api/v1/datasets/FOU2T14D?format=json'
     try:
+        full_url = f"{URL}?{urlencode(parameters)}" if parameters else URL
         
-        dataset = requests.get(URL)
+        dataset = requests.get(full_url)
+        dataset.raise_for_status()
         return extract_data_into_list(dataset.json())
     
-    except Exception as e:
-        print(f"Error when fetch data:{e}")
+    except Exception as error:
+        print(f"Error when fetching data:{error}")
+        return None
+
+def fetch_new_data():
+    return fetch_data()
+
+def fetch_historical_data_in_publishDateTime_range(start_date, end_date):
+    parameters = {
+        "publishDateTimeFrom": start_date,
+        "publishDateTimeTo": end_date
+    }
+    return fetch_data(parameters)
 
 #Extract data into a list of tuples for immutability
 def extract_data_into_list(data):
-    records = [(record["dataset"], record["fuelType"], record["publishTime"], record["systemZone"], record["forecastDate"], record["forecastDateTimezone"], record["outputUsable"], record["biddingZone"], record["interconnectorName"], record["interconnector"]) for record in data["data"]]
+    dataset_records = [(record["dataset"], record["fuelType"], record["publishTime"], record["systemZone"], record["forecastDate"], record["forecastDateTimezone"], record["outputUsable"], record["biddingZone"], record["interconnectorName"], record["interconnector"]) for record in data["data"]]
         
-    return records
+    return dataset_records
 
 #To ensure efficient performance for large datasets in the future - data is fetched in a specific chunk size
 def fetch_data_in_chunks(dataset):
@@ -33,20 +47,20 @@ def fetch_data_in_chunks(dataset):
         yield dataset[chunk:chunk + chunk_size]
 
 #Preprocess to avoid duplicates.
-def preprocess_data(data):
+def deduplicate_data(dataset):
         
-    df = pd.Series(data)
+    df = pd.Series(dataset)
     deduplicated_data = df.drop_duplicates() 
     return deduplicated_data      
     
-def insert_into_evora_database(cursor, dataset_records):
+def insert_into_database(cursor, dataset_records):
     
-    sql_query = """INSERT INTO evoraData (dataset, fuelType, publishTime, systemZone, forecastDate, forecastDateTimezone, outputUsable, biddingZone, interconnectorName, interconnector) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+    sql_query = """INSERT INTO erova_records (dataset, fuelType, publishTime, systemZone, forecastDate, forecastDateTimezone, outputUsable, biddingZone, interconnectorName, interconnector) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
     
     cursor.executemany(sql_query, dataset_records)
 
-#Perform the task of fetching and inserting into  the database
-def perform_evora_task():
+
+def perform_each_task():
     
     new_data = fetch_new_data()
     
@@ -57,8 +71,8 @@ def perform_evora_task():
             
             for chunk in fetch_data_in_chunks(new_data):
                 
-                deduplicated_data = preprocess_data(chunk)
-                insert_into_evora_database(cur, deduplicated_data)
+                deduplicated_data = deduplicate_data(chunk)
+                insert_into_database(cur, deduplicated_data)
             
         print("Tasks completed!")
         conn.commit()
@@ -67,7 +81,7 @@ def perform_evora_task():
         print(f"Error with task management process: {error}")
         
 if __name__ == '__main__':
-    perform_evora_task()
+    perform_each_task()
 
 
 
