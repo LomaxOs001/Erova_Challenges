@@ -14,7 +14,7 @@ class DatabaseManager:
                 sql_query = """INSERT INTO erova_fou (dataset, fuelType, publishTime, systemZone, forecastDate, forecastDateTimezone, outputUsable, biddingZone, interconnectorName, interconnector) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
                 
             case "nou":
-                sql_query = """INSERT INTO erova_nou (dataset, fuelType, publishTime, systemZone, forecastDate, forecastDateTimezone, outputUsable) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+                sql_query = """INSERT INTO erova_nou (dataset, publishTime, systemZone, forecastDate, forecastDateTimezone, outputUsable) VALUES (%s, %s, %s, %s, %s, %s)"""
             
             case "uou":
                 sql_query = """INSERT INTO erova_uou (dataset, fuelType, nationalGridBmUnit, bmUnit, publishTime, week, year, outputUsable) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""

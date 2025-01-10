@@ -10,9 +10,9 @@ class DataProcessor:
         cls.__dataset_records = [(record["dataset"], record["fuelType"], record["publishTime"], record["systemZone"], record["forecastDate"], record["forecastDateTimezone"], record["outputUsable"], record["biddingZone"], record["interconnectorName"], record["interconnector"]) for record in data["data"]]
     
     @classmethod
-    def convert_nou__dataset_into_list(cls, data):
+    def convert_nou_dataset_into_list(cls, data):
         
-        cls.__dataset_records = [(record["dataset"], record["fuelType"], record["publishTime"], record["systemZone"], record["forecastDate"], record["forecastDateTimezone"], record["outputUsable"]) for record in data["data"]]
+        cls.__dataset_records = [(record["dataset"], record["publishTime"], record["systemZone"], record["forecastDate"], record["forecastDateTimezone"], record["outputUsable"]) for record in data["data"]]
    
         
     @classmethod

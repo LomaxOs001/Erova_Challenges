@@ -13,7 +13,7 @@ class TaskManager:
             case "fou":
                 DataProcessor.convert_fou_dataset_into_list(new_data)
             case "nou":
-                DataProcessor.convert_nou__dataset_into_list(new_data)
+                DataProcessor.convert_nou_dataset_into_list(new_data)
             case "uou":
                 DataProcessor.convert_ouo_data_into_list(new_data)
                 
