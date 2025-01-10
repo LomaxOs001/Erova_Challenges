@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-from datasetmanagement.database import DatabaseManager
+from database.databasemanagement import DatabaseManager
 from datasetmanagement.datafetch import DataFetcher
 from datasetmanagement.taskmanagement import TaskManager
 

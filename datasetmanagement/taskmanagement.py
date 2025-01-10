@@ -8,7 +8,9 @@ class TaskManager:
         
     def perform_tasks(self):
         new_data = self.data_fetcher.fetch_new_data()
-        extracted_data = DataProcessor.extract_data_into_list(new_data)
+        
+        DataProcessor.extract_fou_data_into_list(new_data)
+        extracted_data = DataProcessor.get_dataset_records()
         deduplicate_data = DataProcessor.remove_duplicates(extracted_data)
         
         for chunked_data in DataProcessor.fetch_data_in_chunks(deduplicate_data):  

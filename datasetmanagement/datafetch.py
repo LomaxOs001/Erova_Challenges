@@ -3,13 +3,18 @@ from urllib.parse import urlencode
 
 class DataFetcher:
     def __init__(self, api_url):
-        self.api_url = api_url
+        self.__api_url = api_url
+        
+     
+    #Setter for __api_url
+    def set_api_url(self, api_url):
+        self.__api_url = api_url
         
     def __fetch_data(self, parameters=None):
         
         try:
             
-            full_url = f"{self.api_url}?{urlencode(parameters)}" if parameters else self.api_url
+            full_url = f"{self.__api_url}?{urlencode(parameters)}" if parameters else self.__api_url
             response = requests.get(full_url)
             response.raise_for_status()
             return response.json()
