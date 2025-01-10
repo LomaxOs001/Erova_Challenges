@@ -10,10 +10,14 @@ from datasetmanagement.taskmanagement import TaskManager
 
 
 if __name__ == '__main__':
-    print(f"POSTGRES_PWD: {os.getenv('POSTGRES_PWD')}")
-    db_manager = DatabaseManager(os.environ["POSTGRES_DB"], os.environ["POSTGRES_USR"], os.environ["POSTGRES_PWD"], os.environ["POSTGRES_LHST"])
+    
+    db_manager = DatabaseManager(
+        os.environ["POSTGRES_DB"], 
+        os.environ["POSTGRES_USR"], 
+        os.environ["POSTGRES_PWD"], 
+        os.environ["POSTGRES_LHST"])
+    
     data_fetcher = DataFetcher('https://data.elexon.co.uk/bmrs/api/v1/datasets/FOU2T14D')
 
-    db_manager.connect()
     task_manager = TaskManager(db_manager, data_fetcher)
-    task_manager.perform_tasks()
+    task_manager.perform_tasks("fou")

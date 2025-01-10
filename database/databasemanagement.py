@@ -6,25 +6,21 @@ class DatabaseManager:
         DatabaseConnector(dbname, user, password, host).connect()
         self.conn = DatabaseConnector().conn
 
-    def insert_fou_records(self, records):
+    def insert_records(self, records, db_table_type):
+        sql_query = ""
         
-        sql_query = """INSERT INTO erova_fou (dataset, fuelType, publishTime, systemZone, forecastDate, forecastDateTimezone, outputUsable, biddingZone, interconnectorName, interconnector) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        match db_table_type:
+            case "fou":
+                sql_query = """INSERT INTO erova_fou (dataset, fuelType, publishTime, systemZone, forecastDate, forecastDateTimezone, outputUsable, biddingZone, interconnectorName, interconnector) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                
+            case "nou":
+                sql_query = """INSERT INTO erova_nou (dataset, fuelType, publishTime, systemZone, forecastDate, forecastDateTimezone, outputUsable) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+            
+            case "uou":
+                sql_query = """INSERT INTO erova_uou (dataset, fuelType, nationalGridBmUnit, bmUnit, publishTime, week, year, outputUsable) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
         
-        self.execute_query(sql_query, records)
-        
-    def insert_nou_records(self, records):
-        
-        sql_query = """INSERT INTO erova_nou (dataset, fuelType, publishTime, systemZone, forecastDate, forecastDateTimezone, outputUsable) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-        
-        self.execute_query(sql_query, records)  
-    def insert_uou_records(self, records):
-        
-        sql_query = """INSERT INTO erova_uou (dataset, fuelType, nationalGridBmUnit, bmUnit, publishTime, week, year, outputUsable) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
-        
-        self.execute_query(sql_query, records)
-        
-    def execute_query(self, query, records=None):
         with self.conn.cursor() as cur:
-            cur.executemany(query, records)
+            cur.executemany(sql_query, records)
         self.conn.commit()
+        
         
