@@ -17,11 +17,20 @@ if __name__ == '__main__':
         os.environ["POSTGRES_PWD"], 
         os.environ["POSTGRES_LHST"])
     
-    fou_data_fetcher = DataFetcher('https://data.elexon.co.uk/bmrs/api/v1/datasets/FOU2T14D')
     
-    nou_data_fetcher = DataFetcher('https://data.elexon.co.uk/bmrs/api/v1/datasets/NOU2T14D')
+    data_fetcher = DataFetcher('https://data.elexon.co.uk/bmrs/api/v1/datasets/FOU2T14D')
+    
+    task_manager = TaskManager(db_manager, data_fetcher)
+    task_manager.perform_tasks("fou")
     
     
-
-    task_manager = TaskManager(db_manager, nou_data_fetcher)
+    data_fetcher.set_api_url('https://data.elexon.co.uk/bmrs/api/v1/datasets/NOU2T14D')
+    
+    task_manager = TaskManager(db_manager, data_fetcher)
     task_manager.perform_tasks("nou")
+    
+    
+    data_fetcher.set_api_url('https://data.elexon.co.uk/bmrs/api/v1/datasets/UOU2T3YW')
+    
+    task_manager = TaskManager(db_manager, data_fetcher)
+    task_manager.perform_tasks("uou")

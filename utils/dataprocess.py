@@ -30,7 +30,7 @@ class DataProcessor:
         return df.drop_duplicates().tolist()
 
     @staticmethod
-    def fetch_data_in_chunks(dataset, chunk_size = 100):
+    def fetch_data_in_chunks(dataset, chunk_size = 1000):
     
         for chunk in range(0, len(dataset), chunk_size):
             yield dataset[chunk:chunk + chunk_size]
